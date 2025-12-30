@@ -52,20 +52,29 @@ export function loadPhone(scene) {
       phone = gltf.scene;
       scene.add(phone);
 
-      // Start fully hidden
-      phone.visible = false;
-
       // Start in tumble pose
       phone.rotation.copy(PHONE_START_ROTATION);
-
-      // Place at end position (GSAP overrides during scroll)
       phone.position.copy(PHONE_END_POSITION);
+
+      // 👇 FORCE GPU WARM-UP
+      phone.visible = true;
+
+      phone.traverse((m) => {
+        if (m.isMesh && m.material) {
+          m.material.transparent = true;
+          m.material.opacity = 0.0001;
+
+          // Mobile safety
+          m.material.clearcoat = 0;
+          m.material.envMapIntensity = 0.3;
+          m.material.needsUpdate = true;
+        }
+      });
 
       resolve(phone);
     });
   });
 }
-
 export function setupPhoneScroll(phone) {
   // Explicit visibility control
   ScrollTrigger.create({

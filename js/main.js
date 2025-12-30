@@ -54,6 +54,22 @@ loadPCB(rootGroup).then(({ board, ledAnchor }) => {
 
   // Load phone AFTER PCB so z-order feels right
   loadPhone(rootGroup).then((phone) => {
+    // 🔥 FORCE COMPILE (mobile fix)
+    renderer.compile(scene, camera);
+    renderer.render(scene, camera);
+
+    // Restore normal state next frame
+    requestAnimationFrame(() => {
+      phone.traverse((m) => {
+        if (m.isMesh && m.material) {
+          m.material.opacity = 1;
+          m.material.transparent = false;
+        }
+      });
+
+      phone.visible = false; // real hiding
+    });
+
     setupPhoneScroll(phone);
   });
 });
