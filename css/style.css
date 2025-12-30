@@ -93,7 +93,7 @@ canvas {
   position: fixed;
   bottom: 9vh;
   left: 50%;
-  transform: translateX(-50%) translateX(16px);
+  transform: translateX(-50%) translateX(12px);
 
   width: 320px;              /* fixed visual width = cleaner centring */
   max-width: 92vw;
