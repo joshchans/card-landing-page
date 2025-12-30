@@ -130,3 +130,18 @@ canvas {
 #card-data a:hover .value {
   text-decoration: underline;
 }
+
+#scroll-hint {
+  position: fixed;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: rgba(200,200,200,0.45);
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+

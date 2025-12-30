@@ -8,27 +8,39 @@ export function setupLEDGlow(board, ledAnchor) {
 
   ledMesh = ledAnchor;
 
-  // Emissive
+  // Emissive (visual only)
   ledMesh.traverse((m) => {
-    if (m.isMesh) {
-      m.material.emissive.set(0xffd400);
+    if (m.isMesh && m.material) {
+      m.material.emissive = new THREE.Color(0xffd400);
       m.material.emissiveIntensity = 0;
+      m.material.side = THREE.FrontSide; // prevent bleed-through
     }
   });
 
-  // Subtle point light
-  ledLight = new THREE.PointLight(0xffd400, 0, 0.1);
+  // --- LED POINT LIGHT (PHYSICALLY CLAMPED) ---
+  ledLight = new THREE.PointLight(
+    0xffd400,
+    0,        // intensity (animated)
+    0.015,    // VERY short range → no back bleed
+    2         // decay
+  );
+
+  // Position at LED, then push slightly forward
   ledAnchor.getWorldPosition(ledLight.position);
   board.add(ledLight);
   board.worldToLocal(ledLight.position);
 
-  // Glow sprite
+  // Push light out of PCB plane (critical)
+  ledLight.position.z += 0.0015;
+
+  // --- GLOW SPRITE (visual halo only) ---
   const glowMat = new THREE.SpriteMaterial({
     map: makeGlowTexture(),
     transparent: true,
     opacity: 0,
     blending: THREE.AdditiveBlending,
-    depthWrite: false
+    depthWrite: false,
+    depthTest: false
   });
 
   glowSprite = new THREE.Sprite(glowMat);
@@ -37,16 +49,20 @@ export function setupLEDGlow(board, ledAnchor) {
   board.add(glowSprite);
 }
 
-// Called from scrollRotation.js
+// Called from scroll logic
 export function updateLEDGlow(fade) {
   if (!ledMesh || !ledLight || !glowSprite) return;
 
+  // Emissive glow on LED body
   ledMesh.traverse((m) => {
-    if (m.isMesh) {
-      m.material.emissiveIntensity = fade * 0.8;
+    if (m.isMesh && m.material) {
+      m.material.emissiveIntensity = fade * 0.9;
     }
   });
 
-  ledLight.intensity = fade * 0.6;
-  glowSprite.material.opacity = fade * 0.25;
+  // Light intensity (kept low on purpose)
+  ledLight.intensity = fade * 0.7;
+
+  // Halo opacity
+  glowSprite.material.opacity = fade * 0.3;
 }
