@@ -12,29 +12,66 @@ function playPing() {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
 
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
+  const now = audioCtx.currentTime;
 
-  osc.type = "sine";
-  osc.frequency.setValueAtTime(1800, audioCtx.currentTime);
+  // Master gain
+  const master = audioCtx.createGain();
+  master.gain.value = 0.18;
+  master.connect(audioCtx.destination);
 
-  gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(
-    0.001,
-    audioCtx.currentTime + 0.08
-  );
+  // --- Fake reverb (short, airy) ---
+  const delay = audioCtx.createDelay();
+  delay.delayTime.value = 0.035;
 
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
+  const feedback = audioCtx.createGain();
+  feedback.gain.value = 0.35;
 
-  osc.start();
-  osc.stop(audioCtx.currentTime + 0.08);
+  delay.connect(feedback);
+  feedback.connect(delay);
+  delay.connect(master);
+
+  // --- Tone 1 (lower chime) ---
+  const osc1 = audioCtx.createOscillator();
+  const gain1 = audioCtx.createGain();
+
+  osc1.type = "sine";
+  osc1.frequency.setValueAtTime(880, now); // A5
+
+  gain1.gain.setValueAtTime(0.0001, now);
+  gain1.gain.exponentialRampToValueAtTime(0.15, now + 0.02);
+  gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+  osc1.connect(gain1);
+  gain1.connect(master);
+  gain1.connect(delay);
+
+  // --- Tone 2 (higher sparkle, slightly delayed) ---
+  const osc2 = audioCtx.createOscillator();
+  const gain2 = audioCtx.createGain();
+
+  osc2.type = "sine";
+  osc2.frequency.setValueAtTime(1760, now + 0.03); // A6
+
+  gain2.gain.setValueAtTime(0.0001, now + 0.03);
+  gain2.gain.exponentialRampToValueAtTime(0.12, now + 0.05);
+  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+
+  osc2.connect(gain2);
+  gain2.connect(master);
+  gain2.connect(delay);
+
+  // Start / stop
+  osc1.start(now);
+  osc2.start(now + 0.03);
+
+  osc1.stop(now + 0.3);
+  osc2.stop(now + 0.35);
 }
 
 export function setupLEDTrigger() {
   ScrollTrigger.create({
     trigger: "#scroll-led",
-    start: "50% bottom",
+    start: "60% bottom",
     end: "100% bottom",
     scrub: true,
 
