@@ -7,32 +7,38 @@ import { GLTFLoader } from "./GLTFLoader.js";
 
 // Scroll window where phone animates in
 const PHONE_SCROLL_START = "0% top";
-const PHONE_SCROLL_END   = "60% top";
+const PHONE_SCROLL_END   = "55% top";
 
 // Phone start (offscreen / hidden pose)
 const PHONE_START_POSITION = new THREE.Vector3(
-  -1,    // x
-  0,// y (well below view)
-  0     // z
+  -0.0,   // x
+  -1.0,   // y
+  0.0    // z
 );
 
 // Phone final resting position (under PCB)
 const PHONE_END_POSITION = new THREE.Vector3(
-  0.029,     // x
-  -0.05,// y (≈2 mm below PCB)
-  0.04      // z
+  0.037,  // x
+ -0.055,   // y
+  0.03    // z
 );
 
-// Phone orientation (flat, back facing up)
+// Phone start rotation (tumble pose)
+const PHONE_START_ROTATION = new THREE.Euler(
+  -4.2,   // x (forward flip)
+ -26.8,   // y (yaw spin)
+  2.4    // z (roll)
+);
+
+// Phone final orientation (DO NOT animate past this)
 const PHONE_FINAL_ROTATION = new THREE.Euler(
-  -0.25, // x
-  2.2,            // y
-  -0.93             // z
+ -0.25,  // x
+  2.2,   // y
+ -0.93   // z
 );
 
 // Optional settle tilt (set to 0 to disable)
-const PHONE_SETTLE_TILT = 0.0;
-
+const PHONE_SETTLE_TILT = 0.08;
 
 /* ───────────────────────────────────────────── */
 
@@ -49,10 +55,10 @@ export function loadPhone(scene) {
       // Start fully hidden
       phone.visible = false;
 
-      // Set final orientation once
-      phone.rotation.copy(PHONE_FINAL_ROTATION);
+      // Start in tumble pose
+      phone.rotation.copy(PHONE_START_ROTATION);
 
-      // Place at final position (animation will override)
+      // Place at end position (GSAP overrides during scroll)
       phone.position.copy(PHONE_END_POSITION);
 
       resolve(phone);
@@ -61,7 +67,7 @@ export function loadPhone(scene) {
 }
 
 export function setupPhoneScroll(phone) {
-  // Control visibility explicitly
+  // Explicit visibility control
   ScrollTrigger.create({
     trigger: "#scroll-space",
     start: PHONE_SCROLL_START,
@@ -75,7 +81,7 @@ export function setupPhoneScroll(phone) {
     }
   });
 
-  // Fly-in motion
+  // Fly-in translation
   gsap.fromTo(
     phone.position,
     {
@@ -97,7 +103,29 @@ export function setupPhoneScroll(phone) {
     }
   );
 
-  // Optional settle tilt (very subtle)
+  // Tumble-in rotation (lands EXACTLY at final pose)
+  gsap.fromTo(
+    phone.rotation,
+    {
+      x: PHONE_START_ROTATION.x,
+      y: PHONE_START_ROTATION.y,
+      z: PHONE_START_ROTATION.z
+    },
+    {
+      x: PHONE_FINAL_ROTATION.x,
+      y: PHONE_FINAL_ROTATION.y,
+      z: PHONE_FINAL_ROTATION.z,
+
+      scrollTrigger: {
+        trigger: "#scroll-space",
+        start: PHONE_SCROLL_START,
+        end: PHONE_SCROLL_END,
+        scrub: 0.4
+      }
+    }
+  );
+
+  // Optional settle tilt (micro polish)
   if (PHONE_SETTLE_TILT > 0) {
     gsap.fromTo(
       phone.rotation,
