@@ -8,6 +8,8 @@ import { loadPhone, setupPhoneScroll } from "./phone.js";
 import { setupBackground, updateBackground } from "./background.js";
 import { setupLEDTrigger } from "./ledTrigger.js";
 
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+renderer.shadowMap.enabled = false;
 gsap.registerPlugin(ScrollTrigger);
 
 // ─────────────────────────────────────────────
@@ -26,6 +28,27 @@ function unlockHaptics() {
 
 window.addEventListener("touchstart", unlockHaptics, { once: true });
 window.addEventListener("click", unlockHaptics, { once: true });
+
+function optimiseMaterials(object) {
+    object.traverse((m) => {
+        if (!m.isMesh || !m.material) return;
+
+          const mats = Array.isArray(m.material)
+            ? m.material
+            : [m.material];
+
+          mats.forEach(mat => {
+                  mat.clearcoat = 0;
+                  mat.clearcoatRoughness = 0;
+                  mat.transmission = 0;
+                  mat.thickness = 0;
+
+                  mat.envMapIntensity = 0.3;
+                  mat.roughness = Math.max(mat.roughness ?? 0.6, 0.6);
+                  mat.metalness = Math.min()
+          })
+    })
+}
 
 /* ─────────────────────────────────────────────
    ROOT GROUP (GLOBAL OFFSET LIVES HERE)
@@ -54,11 +77,10 @@ loadPCB(rootGroup).then(({ board, ledAnchor }) => {
 
   // Load phone AFTER PCB so z-order feels right
   loadPhone(rootGroup).then((phone) => {
-    // 🔥 FORCE COMPILE (mobile fix)
+    // 🔥 FORCE GPU COMPILE (mobile hitch fix)
     renderer.compile(scene, camera);
     renderer.render(scene, camera);
 
-    // Restore normal state next frame
     requestAnimationFrame(() => {
       phone.traverse((m) => {
         if (m.isMesh && m.material) {
@@ -67,7 +89,7 @@ loadPCB(rootGroup).then(({ board, ledAnchor }) => {
         }
       });
 
-      phone.visible = false; // real hiding
+      phone.visible = false;
     });
 
     setupPhoneScroll(phone);

@@ -133,7 +133,19 @@ export function setupPhoneScroll(phone) {
       }
     }
   );
-
+  ScrollTrigger.create({
+    trigger: "#scroll-motion",
+    start: PHONE_SCROLL_END,
+    once: true,
+    onEnter: () => {
+      phone.traverse(m => {
+        if (m.isMesh) {
+          m.matrixAutoUpdate = false;
+          m.updateMatrix();
+        }
+      });
+    }
+  });
   // Optional settle tilt (micro polish)
   if (PHONE_SETTLE_TILT > 0) {
     gsap.fromTo(
