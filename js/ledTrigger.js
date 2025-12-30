@@ -14,23 +14,23 @@ function playPing() {
 
   const now = audioCtx.currentTime;
 
-  // Master gain
+  // Master output
   const master = audioCtx.createGain();
-  master.gain.value = 0.18;
+  master.gain.value = 0.2;
   master.connect(audioCtx.destination);
 
-  // --- Fake reverb (short, airy) ---
+  // --- Reverb tail (longer, cleaner) ---
   const delay = audioCtx.createDelay();
-  delay.delayTime.value = 0.035;
+  delay.delayTime.value = 0.045;
 
   const feedback = audioCtx.createGain();
-  feedback.gain.value = 0.35;
+  feedback.gain.value = 0.55; // longer tail
 
   delay.connect(feedback);
   feedback.connect(delay);
   delay.connect(master);
 
-  // --- Tone 1 (lower chime) ---
+  // === Tone 1 (main chime) ===
   const osc1 = audioCtx.createOscillator();
   const gain1 = audioCtx.createGain();
 
@@ -38,36 +38,35 @@ function playPing() {
   osc1.frequency.setValueAtTime(880, now); // A5
 
   gain1.gain.setValueAtTime(0.0001, now);
-  gain1.gain.exponentialRampToValueAtTime(0.15, now + 0.02);
-  gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+  gain1.gain.exponentialRampToValueAtTime(0.22, now + 0.05);
+  gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
 
   osc1.connect(gain1);
   gain1.connect(master);
   gain1.connect(delay);
 
-  // --- Tone 2 (higher sparkle, slightly delayed) ---
+  // === Tone 2 (reply chime, clearly later) ===
   const osc2 = audioCtx.createOscillator();
   const gain2 = audioCtx.createGain();
 
   osc2.type = "sine";
-  osc2.frequency.setValueAtTime(1760, now + 0.03); // A6
+  osc2.frequency.setValueAtTime(1760, now + 0.12); // A6
 
-  gain2.gain.setValueAtTime(0.0001, now + 0.03);
-  gain2.gain.exponentialRampToValueAtTime(0.12, now + 0.05);
-  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+  gain2.gain.setValueAtTime(0.0001, now + 0.12);
+  gain2.gain.exponentialRampToValueAtTime(0.18, now + 0.17);
+  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
 
   osc2.connect(gain2);
   gain2.connect(master);
   gain2.connect(delay);
 
-  // Start / stop
+  // Play
   osc1.start(now);
-  osc2.start(now + 0.03);
+  osc2.start(now + 0.12);
 
-  osc1.stop(now + 0.3);
-  osc2.stop(now + 0.35);
+  osc1.stop(now + 0.7);
+  osc2.stop(now + 0.85);
 }
-
 export function setupLEDTrigger() {
   ScrollTrigger.create({
     trigger: "#scroll-led",
