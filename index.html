@@ -7,11 +7,18 @@
   <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body>
-
-  <div id="light-fade"></div>
+  <div id="card-status">
+    <div class="title">CARD RECOGNISED</div>
+    <div class="meta">—</div>
+  </div>
 
   <canvas id="scene"></canvas>
-  <div id="scroll-space"></div>
+
+  <!-- Phase 1: falling / motion -->
+  <div id="scroll-motion"></div>
+
+  <!-- Phase 2: LED activation (after motion stops) -->
+  <div id="scroll-led"></div>
 
   <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
   <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>

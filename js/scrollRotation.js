@@ -1,4 +1,3 @@
-import { updateLEDGlow } from "./ledGlow.js";
 import { updateBackground } from "./background.js";
 import { updateLightFade } from "./lightFade.js";
 
@@ -16,7 +15,7 @@ export function setupScrollRotation(board) {
     z: Math.PI * 2 - 0.5,
 
     scrollTrigger: {
-      trigger: "#scroll-space",
+      trigger: "#scroll-motion",
       start: "top top",
       end: "bottom bottom",
       scrub: 0.4,
@@ -31,7 +30,6 @@ export function setupScrollRotation(board) {
           fade = Math.min(Math.max(fade, 0), 1);
         }
 
-        updateLEDGlow(fade);
         updateBackground(p);
         updateLightFade(p);
       }

@@ -14,7 +14,7 @@ function easeInQuad(t) {
 }
 
 export function setupBackground(scene) {
-  const COUNT = 1200;
+  const COUNT = 400;
 
   positions = new Float32Array(COUNT * 3);
   speeds = new Float32Array(COUNT);
@@ -22,7 +22,7 @@ export function setupBackground(scene) {
   for (let i = 0; i < COUNT; i++) {
     positions[i * 3 + 0] = (Math.random() - 0.5) * 3.0; // x spread
     positions[i * 3 + 1] = Math.random() * 6 - 3;      // y spread
-    positions[i * 3 + 2] = -Math.random() * 2.5;       // closer to camera
+    positions[i * 3 + 2] = -Math.random() * 2.0;       // closer to camera
 
     // 🔑 slightly faster overall
     speeds[i] = Math.random() * 1.0 + 0.6;

@@ -69,7 +69,7 @@ export function loadPhone(scene) {
 export function setupPhoneScroll(phone) {
   // Explicit visibility control
   ScrollTrigger.create({
-    trigger: "#scroll-space",
+    trigger: "#scroll-motion",
     start: PHONE_SCROLL_START,
     end: PHONE_SCROLL_END,
 
@@ -95,7 +95,7 @@ export function setupPhoneScroll(phone) {
       z: PHONE_END_POSITION.z,
 
       scrollTrigger: {
-        trigger: "#scroll-space",
+        trigger: "#scroll-motion",
         start: PHONE_SCROLL_START,
         end: PHONE_SCROLL_END,
         scrub: 0.4
@@ -117,7 +117,7 @@ export function setupPhoneScroll(phone) {
       z: PHONE_FINAL_ROTATION.z,
 
       scrollTrigger: {
-        trigger: "#scroll-space",
+        trigger: "#scroll-motion",
         start: PHONE_SCROLL_START,
         end: PHONE_SCROLL_END,
         scrub: 0.4
@@ -133,7 +133,7 @@ export function setupPhoneScroll(phone) {
       {
         x: PHONE_FINAL_ROTATION.x,
         scrollTrigger: {
-          trigger: "#scroll-space",
+          trigger: "#scroll-motion",
           start: PHONE_SCROLL_START,
           end: PHONE_SCROLL_END,
           scrub: 0.4

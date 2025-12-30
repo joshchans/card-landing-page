@@ -23,18 +23,42 @@ canvas {
   display: block;
 }
 
-#scroll-space {
-  height: 500vh;
+#scroll-motion {
+  height: 500vh; /* all falling animation */
 }
 
-canvas {
+#scroll-led {
+  height: 100vh; /* LED-only interaction */
+}
+
+#card-status {
   position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  display: block;
+  top: 22vh;                 /* further down the screen */
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  color: #111;
+  opacity: 0;
+  pointer-events: none;
 }
 
-#scroll-space {
-  height: 300vh;
+#card-status .title {
+  font-size: 18px;           /* bigger title */
+  letter-spacing: 0.22em;
+  font-weight: 500;
+}
+
+#card-status .meta {
+  margin-top: 10px;
+  font-size: 14px;           /* bigger meta text */
+  opacity: 0.6;
 }

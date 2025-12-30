@@ -5,6 +5,7 @@ import { setupScrollRotation } from "./scrollRotation.js";
 import { setupLEDGlow } from "./ledGlow.js";
 import { loadPhone, setupPhoneScroll } from "./phone.js";
 import { setupBackground, updateBackground } from "./background.js";
+import { setupLEDTrigger } from "./ledTrigger.js";
 
 import "./three.module.js"; // ensure THREE is loaded
 
@@ -18,6 +19,7 @@ updateBackground(0);
 loadPCB(scene).then(({ board, ledAnchor }) => {
   setupLEDGlow(board, ledAnchor);
   setupScrollRotation(board);
+  setupLEDTrigger();
 
   // Load phone AFTER PCB so z-order feels right
   loadPhone(scene).then((phone) => {
