@@ -4,13 +4,15 @@ import { loadPCB } from "./pcb.js";
 import { setupScrollRotation } from "./scrollRotation.js";
 import { setupLEDGlow } from "./ledGlow.js";
 import { loadPhone, setupPhoneScroll } from "./phone.js";
+import { setupBackground, updateBackground } from "./background.js";
 
 import "./three.module.js"; // ensure THREE is loaded
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Lighting
 setupLighting(scene);
+setupBackground(scene);
+updateBackground(0);
 
 // Load PCB → then wire features
 loadPCB(scene).then(({ board, ledAnchor }) => {

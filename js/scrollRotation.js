@@ -1,4 +1,6 @@
 import { updateLEDGlow } from "./ledGlow.js";
+import { updateBackground } from "./background.js";
+import { updateLightFade } from "./lightFade.js";
 
 export function setupScrollRotation(board) {
   const startY = Math.PI;
@@ -30,6 +32,8 @@ export function setupScrollRotation(board) {
         }
 
         updateLEDGlow(fade);
+        updateBackground(p);
+        updateLightFade(p);
       }
     }
   });

@@ -1,7 +1,6 @@
 import * as THREE from "./three.module.js";
 
 export const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xffffff);
 
 export const camera = new THREE.PerspectiveCamera(
   45,
@@ -14,8 +13,10 @@ camera.lookAt(0, 0, 0);
 
 export const renderer = new THREE.WebGLRenderer({
   canvas: document.getElementById("scene"),
-  antialias: true
+  antialias: true,
+  alpha: true
 });
+renderer.setClearColor(0x000000, 0); // transparent
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
