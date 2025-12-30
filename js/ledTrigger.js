@@ -6,10 +6,31 @@ import {
 
 let hasTriggered = false;
 let audioCtx;
+let hapticsUnlocked = false;
+
+function unlockHapticsAndAudio() {
+  if (!hapticsUnlocked) {
+    if (navigator.vibrate) navigator.vibrate(1);
+
+    if (audioCtx && audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+
+    hapticsUnlocked = true;
+    console.log("Haptics + audio unlocked");
+  }
+}
+
+window.addEventListener("touchstart", unlockHapticsAndAudio, { once: true });
+window.addEventListener("click", unlockHapticsAndAudio, { once: true });
 
 function playPing() {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  if (audioCtx.state === "suspended") {
+    audioCtx.resume();
   }
 
   const now = audioCtx.currentTime;
@@ -82,10 +103,9 @@ export function setupLEDTrigger() {
       const TRIGGER_POINT = 0.08;
       if (p > TRIGGER_POINT && !hasTriggered) {
         // Haptic
-        if ("vibrate" in navigator) {
-          navigator.vibrate(15);
+        if (hapticsUnlocked && navigator.vibrate) {
+          navigator.vibrate([8, 16, 8]);
         }
-
         // Audio ping
         playPing();
 

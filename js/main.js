@@ -10,6 +10,23 @@ import { setupLEDTrigger } from "./ledTrigger.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// ─────────────────────────────────────────────
+// HAPTICS UNLOCK (required for mobile vibration)
+// ─────────────────────────────────────────────
+
+window.__hapticsUnlocked = false;
+
+function unlockHaptics() {
+  if (!window.__hapticsUnlocked && navigator.vibrate) {
+    navigator.vibrate(1); // tiny unlock pulse
+    window.__hapticsUnlocked = true;
+    console.log("Haptics unlocked");
+  }
+}
+
+window.addEventListener("touchstart", unlockHaptics, { once: true });
+window.addEventListener("click", unlockHaptics, { once: true });
+
 /* ─────────────────────────────────────────────
    ROOT GROUP (GLOBAL OFFSET LIVES HERE)
    ───────────────────────────────────────────── */
