@@ -4,28 +4,26 @@ import {
   updateCardStatusFade
 } from "./cardStatus.js";
 
+let dataShown = false;
+
 export function setupLEDTrigger() {
   ScrollTrigger.create({
     trigger: "#scroll-led",
-
-    // After motion has ended
-    start: "70% bottom",
+    start: "50% bottom",
     end: "100% bottom",
-
     scrub: true,
 
     onUpdate: (self) => {
-      const p = self.progress; // 0 → 1
+      const p = self.progress;
 
-      // LED behaviour (UNCHANGED)
+      // LED (unchanged)
       updateLEDGlow(p);
 
-      // Initialise text once
+      // Card recognised text
       if (p > 0.05) {
         initCardStatus();
       }
 
-      // Fade text in only near the end
       const TEXT_FADE_START = 0.6;
       let textOpacity = 0;
 
@@ -36,11 +34,21 @@ export function setupLEDTrigger() {
       }
 
       updateCardStatusFade(textOpacity);
+
+      // Data payload fade (slightly after title)
+      const data = document.getElementById("card-data");
+      if (data) {
+        data.style.transition = "opacity 0.5s ease";
+        data.style.opacity = Math.max(0, textOpacity - 0.15);
+      }
     },
 
     onLeaveBack: () => {
       updateLEDGlow(0);
       updateCardStatusFade(0);
+
+      const data = document.getElementById("card-data");
+      if (data) data.style.opacity = 0;
     }
   });
 }
