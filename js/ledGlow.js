@@ -17,7 +17,7 @@ export function setupLEDGlow(board, ledAnchor) {
   });
 
   // Subtle point light
-  ledLight = new THREE.PointLight(0xffd400, 0, 0.02);
+  ledLight = new THREE.PointLight(0xffd400, 0, 0.1);
   ledAnchor.getWorldPosition(ledLight.position);
   board.add(ledLight);
   board.worldToLocal(ledLight.position);
