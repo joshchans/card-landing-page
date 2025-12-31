@@ -5,89 +5,89 @@ import {
 } from "./cardStatus.js";
 
 let hasTriggered = false;
-let audioCtx;
-let hapticsUnlocked = false;
+let audioCtx = null;
+let unlocked = false;
 
-function unlockHapticsAndAudio() {
-  if (!hapticsUnlocked) {
-    if (navigator.vibrate) navigator.vibrate(1);
+/* ─────────────────────────────────────────────
+   MOBILE UNLOCK (AUDIO + HAPTICS)
+   MUST CREATE AudioContext DURING USER GESTURE
+   ───────────────────────────────────────────── */
 
-    if (audioCtx && audioCtx.state === "suspended") {
-      audioCtx.resume();
-    }
+function unlockAudioAndHaptics() {
+  if (unlocked) return;
 
-    hapticsUnlocked = true;
-    console.log("Haptics + audio unlocked");
-  }
-}
-
-window.addEventListener("touchstart", unlockHapticsAndAudio, { once: true });
-window.addEventListener("click", unlockHapticsAndAudio, { once: true });
-
-function playPing() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
+  // Create audio context DURING gesture (critical)
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
   if (audioCtx.state === "suspended") {
     audioCtx.resume();
   }
 
+  if (navigator.vibrate) {
+    navigator.vibrate(1); // tiny unlock pulse
+  }
+
+  unlocked = true;
+  console.log("Audio + haptics unlocked");
+}
+
+window.addEventListener("touchstart", unlockAudioAndHaptics, { once: true });
+window.addEventListener("click", unlockAudioAndHaptics, { once: true });
+
+/* ─────────────────────────────────────────────
+   APPLE-PAY-STYLE DOUBLE CHIME
+   ───────────────────────────────────────────── */
+
+function playPing() {
+  if (!unlocked || !audioCtx) return;
+
   const now = audioCtx.currentTime;
 
-  // Master output
   const master = audioCtx.createGain();
-  master.gain.value = 0.2;
+  master.gain.value = 0.22;
   master.connect(audioCtx.destination);
 
-  // --- Reverb tail (longer, cleaner) ---
+  // Reverb tail
   const delay = audioCtx.createDelay();
   delay.delayTime.value = 0.045;
 
   const feedback = audioCtx.createGain();
-  feedback.gain.value = 0.55; // longer tail
+  feedback.gain.value = 0.55;
 
   delay.connect(feedback);
   feedback.connect(delay);
   delay.connect(master);
 
-  // === Tone 1 (main chime) ===
-  const osc1 = audioCtx.createOscillator();
-  const gain1 = audioCtx.createGain();
+  function tone(freq, start, peak, end, dur) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
 
-  osc1.type = "sine";
-  osc1.frequency.setValueAtTime(880, now); // A5
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(freq, start);
 
-  gain1.gain.setValueAtTime(0.0001, now);
-  gain1.gain.exponentialRampToValueAtTime(0.22, now + 0.05);
-  gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(peak, start + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, end);
 
-  osc1.connect(gain1);
-  gain1.connect(master);
-  gain1.connect(delay);
+    osc.connect(gain);
+    gain.connect(master);
+    gain.connect(delay);
 
-  // === Tone 2 (reply chime, clearly later) ===
-  const osc2 = audioCtx.createOscillator();
-  const gain2 = audioCtx.createGain();
+    osc.start(start);
+    osc.stop(start + dur);
+  }
 
-  osc2.type = "sine";
-  osc2.frequency.setValueAtTime(1760, now + 0.12); // A6
+  // Main tone
+  tone(880, now, 0.22, now + 0.45, 0.7);
 
-  gain2.gain.setValueAtTime(0.0001, now + 0.12);
-  gain2.gain.exponentialRampToValueAtTime(0.18, now + 0.17);
-  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
-
-  osc2.connect(gain2);
-  gain2.connect(master);
-  gain2.connect(delay);
-
-  // Play
-  osc1.start(now);
-  osc2.start(now + 0.12);
-
-  osc1.stop(now + 0.7);
-  osc2.stop(now + 0.85);
+  // Reply tone (clearly delayed)
+  tone(1760, now + 0.12, 0.18, now + 0.6, 0.85);
 }
+
+/* ─────────────────────────────────────────────
+   SCROLL TRIGGER
+   ───────────────────────────────────────────── */
+
 export function setupLEDTrigger() {
   ScrollTrigger.create({
     trigger: "#scroll-led",
@@ -98,24 +98,26 @@ export function setupLEDTrigger() {
     onUpdate: (self) => {
       const p = self.progress;
 
+      // LED intensity
       updateLEDGlow(p);
 
-      const TRIGGER_POINT = 1.0;
-      if (p > TRIGGER_POINT && !hasTriggered) {
-        // Haptic
-        if (hapticsUnlocked && navigator.vibrate) {
+      // 🔔 Trigger once, reliably
+      const TRIGGER_POINT = 0.92;
+      if (p >= TRIGGER_POINT && !hasTriggered) {
+        if (navigator.vibrate) {
           navigator.vibrate([8, 16, 8]);
         }
-        // Audio ping
-        playPing();
 
+        playPing();
         hasTriggered = true;
       }
 
+      // Card recognised text
       if (p > 0.05) {
         initCardStatus();
       }
 
+      // Fade text
       const TEXT_FADE_START = 0.6;
       let textOpacity = 0;
 
