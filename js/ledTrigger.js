@@ -100,7 +100,7 @@ export function setupLEDTrigger() {
 
       updateLEDGlow(p);
 
-      const TRIGGER_POINT = 0.08;
+      const TRIGGER_POINT = 1.0;
       if (p > TRIGGER_POINT && !hasTriggered) {
         // Haptic
         if (hapticsUnlocked && navigator.vibrate) {

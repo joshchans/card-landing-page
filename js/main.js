@@ -13,6 +13,41 @@ renderer.shadowMap.enabled = false;
 gsap.registerPlugin(ScrollTrigger);
 
 // ─────────────────────────────────────────────
+// AUTO SCROLL ON FIRST TOUCH / CLICK
+// ─────────────────────────────────────────────
+
+// Adjust this: higher = slower scroll
+const AUTO_SCROLL_DURATION = 4200; // ms
+
+let autoScrolled = false;
+
+function autoScrollToBottom() {
+  if (autoScrolled) return;
+  autoScrolled = true;
+
+  const start = window.scrollY;
+  const end =
+    document.documentElement.scrollHeight - window.innerHeight;
+
+  const startTime = performance.now();
+
+  function step(now) {
+    const t = Math.min((now - startTime) / AUTO_SCROLL_DURATION, 1);
+
+    // easeInOut
+    const eased = t < 0.5
+      ? 2 * t * t
+      : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+    window.scrollTo(0, start + (end - start) * eased);
+
+    if (t < 1) requestAnimationFrame(step);
+  }
+
+  requestAnimationFrame(step);
+}
+
+// ─────────────────────────────────────────────
 // HAPTICS UNLOCK (required for mobile vibration)
 // ─────────────────────────────────────────────
 
@@ -26,8 +61,13 @@ function unlockHaptics() {
   }
 }
 
-window.addEventListener("touchstart", unlockHaptics, { once: true });
-window.addEventListener("click", unlockHaptics, { once: true });
+function firstInteraction() {
+  unlockHaptics();
+  autoScrollToBottom();
+}
+
+window.addEventListener("touchstart", firstInteraction, { once: true });
+window.addEventListener("click", firstInteraction, { once: true });
 
 function optimiseMaterials(object) {
     object.traverse((m) => {
