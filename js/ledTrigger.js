@@ -10,13 +10,12 @@ let unlocked = false;
 
 /* ─────────────────────────────────────────────
    MOBILE UNLOCK (AUDIO + HAPTICS)
-   MUST CREATE AudioContext DURING USER GESTURE
+   MUST RUN DURING USER GESTURE
    ───────────────────────────────────────────── */
 
 function unlockAudioAndHaptics() {
   if (unlocked) return;
 
-  // Create audio context DURING gesture (critical)
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
   if (audioCtx.state === "suspended") {
@@ -24,7 +23,7 @@ function unlockAudioAndHaptics() {
   }
 
   if (navigator.vibrate) {
-    navigator.vibrate(1); // tiny unlock pulse
+    navigator.vibrate(1);
   }
 
   unlocked = true;
@@ -47,7 +46,6 @@ function playPing() {
   master.gain.value = 0.22;
   master.connect(audioCtx.destination);
 
-  // Reverb tail
   const delay = audioCtx.createDelay();
   delay.delayTime.value = 0.045;
 
@@ -77,10 +75,7 @@ function playPing() {
     osc.stop(start + dur);
   }
 
-  // Main tone
   tone(880, now, 0.22, now + 0.45, 0.7);
-
-  // Reply tone (clearly delayed)
   tone(1760, now + 0.12, 0.18, now + 0.6, 0.85);
 }
 
@@ -98,12 +93,10 @@ export function setupLEDTrigger() {
     onUpdate: (self) => {
       const p = self.progress;
 
-      // LED intensity
       updateLEDGlow(p);
 
-      // 🔔 Trigger once, reliably
-      const TRIGGER_POINT = 0.92;
-      if (p >= TRIGGER_POINT && !hasTriggered) {
+      // Fire once near the end
+      if (p >= 0.92 && !hasTriggered) {
         if (navigator.vibrate) {
           navigator.vibrate([8, 16, 8]);
         }
@@ -112,12 +105,10 @@ export function setupLEDTrigger() {
         hasTriggered = true;
       }
 
-      // Card recognised text
       if (p > 0.05) {
         initCardStatus();
       }
 
-      // Fade text
       const TEXT_FADE_START = 0.6;
       let textOpacity = 0;
 
@@ -131,7 +122,9 @@ export function setupLEDTrigger() {
 
       const data = document.getElementById("card-data");
       if (data) {
-        data.style.opacity = Math.max(0, textOpacity - 0.15);
+        const visible = textOpacity > 0.15;
+        data.style.opacity = visible ? 1 : 0;
+        data.classList.toggle("visible", visible);
       }
     },
 
@@ -141,7 +134,10 @@ export function setupLEDTrigger() {
       hasTriggered = false;
 
       const data = document.getElementById("card-data");
-      if (data) data.style.opacity = 0;
+      if (data) {
+        data.style.opacity = 0;
+        data.classList.remove("visible");
+      }
     }
   });
 }
