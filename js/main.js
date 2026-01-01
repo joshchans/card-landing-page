@@ -108,7 +108,7 @@ scene.add(rootGroup);
 
 // ⬆️ Move entire animation up/down here
 rootGroup.position.y = 0.02;
-rootGroup.position.x = -0.005;
+rootGroup.position.x = -0.000;
 
 /* ───────────────────────────────────────────── */
 
