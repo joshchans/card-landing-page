@@ -148,7 +148,7 @@ canvas {
 #touch-to-start {
   position: fixed;
   left: 50%;
-  bottom: 28vh;
+  bottom: 18vh;
   transform: translateX(-50%);
 
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
