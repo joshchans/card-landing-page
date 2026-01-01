@@ -16,6 +16,14 @@ gsap.registerPlugin(ScrollTrigger);
 // AUTO SCROLL ON FIRST TOUCH / CLICK
 // ─────────────────────────────────────────────
 
+const touchHint = document.getElementById("touch-to-start");
+
+function hideTouchHint() {
+  if (touchHint) {
+    touchHint.classList.add("hidden");
+  }
+}
+
 // Adjust this: higher = slower scroll
 const AUTO_SCROLL_DURATION = 4200; // ms
 
@@ -64,6 +72,7 @@ function unlockHaptics() {
 function firstInteraction() {
   unlockHaptics();
   autoScrollToBottom();
+  hideTouchHint();
 }
 
 window.addEventListener("touchstart", firstInteraction, { once: true });
