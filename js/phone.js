@@ -19,7 +19,7 @@ const PHONE_START_POSITION = new THREE.Vector3(
 // Phone final resting position (under PCB)
 const PHONE_END_POSITION = new THREE.Vector3(
   0.037,  // x
- -0.055,   // y
+ -0.05,   // y
   0.03    // z
 );
 

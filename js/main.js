@@ -121,7 +121,7 @@ updateBackground(0);
 // Load PCB → then wire features
 loadPCB(rootGroup).then(({ board, ledAnchor }) => {
   setupLEDGlow(board, ledAnchor);
-  setupScrollRotation(board);
+  setupScrollRotation(board, rootGroup);
   setupLEDTrigger();
 
   // Load phone AFTER PCB so z-order feels right
