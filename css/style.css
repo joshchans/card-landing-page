@@ -147,17 +147,20 @@ canvas {
 
 #touch-to-start {
   position: fixed;
-  top: 28vh;
   left: 50%;
+  bottom: 28vh;
   transform: translateX(-50%);
-  z-index: 1000;
 
-  font-family: monospace;
-  letter-spacing: 0.2em;
-  font-size: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+               Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
   color: rgba(255, 255, 255, 0.85);
-
   pointer-events: none;
+  z-index: 10;
+
   opacity: 1;
   transition: opacity 0.6s ease;
 }
