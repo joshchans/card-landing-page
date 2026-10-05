@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Joshua Chan</title>
   <link rel="stylesheet" href="./css/style.css" />
+
+  <!-- Start downloading models + JS straight away, in parallel (board first) -->
+  <link rel="preload" href="./models/board.glb" as="fetch" crossorigin fetchpriority="high" />
+  <link rel="preload" href="./models/phone.glb" as="fetch" crossorigin fetchpriority="low" />
+  <link rel="modulepreload" href="./js/main.js" />
+  <link rel="modulepreload" href="./js/three.module.js" />
+  <link rel="modulepreload" href="./js/GLTFLoader.js" />
+  <link rel="modulepreload" href="./js/utils/BufferGeometryUtils.js" />
+  <link rel="modulepreload" href="./js/scene.js" />
+  <link rel="modulepreload" href="./js/pcb.js" />
+  <link rel="modulepreload" href="./js/phone.js" />
+  <link rel="modulepreload" href="./js/lighting.js" />
+  <link rel="modulepreload" href="./js/background.js" />
+  <link rel="modulepreload" href="./js/scrollRotation.js" />
+  <link rel="modulepreload" href="./js/ledGlow.js" />
+  <link rel="modulepreload" href="./js/ledTrigger.js" />
+  <link rel="modulepreload" href="./js/glowTexture.js" />
+  <link rel="modulepreload" href="./js/lightFade.js" />
+  <link rel="modulepreload" href="./js/cardStatus.js" />
 </head>
 <body>
   <div id="card-status">
@@ -37,8 +56,8 @@
       <span class="value">joshchans.com</span>
     </a>
   </div>
-  <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
-  <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+  <script src="./js/vendor/gsap.min.js"></script>
+  <script src="./js/vendor/ScrollTrigger.min.js"></script>
   <script type="module" src="./js/main.js"></script>
   <!--<div id="scroll-hint">TAP TO START</div>-->
 </body>
